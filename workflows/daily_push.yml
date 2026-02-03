@@ -1,0 +1,23 @@
+name: Daily TPM Push
+on:
+  schedule:
+    - cron: '0 17 * * *' # PST 09:00 (UTC 17:00)
+  workflow_dispatch:
+
+jobs:
+  send_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Notification via OneSignal
+        run: |
+          curl --request POST \
+            --url https://onesignal.com/api/v1/notifications \
+            --header 'Authorization: Basic ${{ secrets.ONESIGNAL_REST_API_KEY }}' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "app_id": "${{ secrets.ONESIGNAL_APP_ID }}",
+              "included_segments": ["Total Subscriptions"],
+              "headings": {"en": "오늘의 TPM 공부 주제 도착!"},
+              "contents": {"en": "지금 바로 오늘의 학습 내용을 확인하고 실력을 키우세요!"},
+              "url": "https://jae1.github.io/daily-study/"
+            }'
